@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "gyver-misc"
+version = "0.1.0"
+description = ""
+authors = ["Gustavo Cardoso <self.gustavocorrea@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+typing-extensions = "^4.12.2"
+orjson = "^3.10.5"
+
+
+
+[tool.poetry.group.style.dependencies]
+ruff = "^0.4.10"
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version_scheme = "pep440"
+version_provider = "poetry"
+update_changelog_on_bump = true
+major_version_zero = true
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
