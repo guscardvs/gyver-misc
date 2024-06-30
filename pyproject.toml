@@ -9,11 +9,18 @@ readme = "README.md"
 python = "^3.10"
 typing-extensions = "^4.12.2"
 orjson = "^3.10.5"
+exceptiongroup = "^1.2.1"
 
 
 
 [tool.poetry.group.style.dependencies]
 ruff = "^0.4.10"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.2.2"
+pytest-asyncio = "^0.23.7"
+pytest-cov = "^5.0.0"
 
 [tool.commitizen]
 name = "cz_conventional_commits"
@@ -22,6 +29,18 @@ version_scheme = "pep440"
 version_provider = "poetry"
 update_changelog_on_bump = true
 major_version_zero = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+addopts = [
+    "--cov=gyver/",
+    "--cov-report=html",
+    "--cov-config=.coveragerc",
+    "--no-cov-on-fail",
+    "--cov-fail-under=80",
+    "-s",
+    "--maxfail=1",
+]
 
 [build-system]
 requires = ["poetry-core"]

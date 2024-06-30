@@ -1,25 +1,33 @@
 import itertools
 from collections import deque
-from collections.abc import Iterable, Sequence
-from typing import Literal, TypeVar
+from collections.abc import Callable, Iterable, Iterator, Sequence
+from typing import Any, Literal, ParamSpec, TypeVar
+
+from typing_extensions import Unpack
 
 from gyver.misc.casting import safe_cast
 
 T = TypeVar("T")
+P = ParamSpec("P")
+S = TypeVar("S")
 
 
-def moving_window(iterable: Iterable[T], window_size: int) -> Iterable[Sequence[T]]:
+def moving_window(
+    iterable: Iterable[T],
+    window_size: int,
+    cast: Callable[[Iterator[T]], Sequence[T]] = tuple,
+) -> Iterable[Sequence[T]]:
     """Return an iterator moving a window of size window_size over iterable."""
     iterator = iter(iterable)
 
     while True:
-        window = tuple(itertools.islice(iterator, window_size))
+        window = cast(itertools.islice(iterator, window_size))
         if not window:
             break
         yield window
 
 
-def flatten(sequence: Sequence[Sequence[T]]) -> Sequence[T]:
+def flatten(sequence: Sequence) -> Sequence:
     """Flatten an arbitrarily nested sequence."""
     flattened = []
     stack: list[tuple[Sequence, int]] = [(sequence, 0)]
@@ -28,15 +36,18 @@ def flatten(sequence: Sequence[Sequence[T]]) -> Sequence[T]:
         curseq, index = stack.pop()
         while index < len(curseq):
             item = curseq[index]
+            index += 1
             if isinstance(item, Sequence) and not isinstance(item, str | bytes):
                 stack.append((curseq, index))
                 curseq, index = item, 0
             else:
                 flattened.append(item)
-            index += 1
 
     return safe_cast(
-        type(sequence), flattened, default=flattened, ignore_childof=(Exception,)
+        type(sequence),
+        flattened,
+        default=flattened,
+        ignore_childof=(Exception,),
     )  # type: ignore
 
 
@@ -106,3 +117,23 @@ def merge_dicts(
                 output_curr[key] = value
 
     return output
+
+
+def predicate_from_first(
+    predicate: Callable[[T], S],
+) -> Callable[[tuple[T, Unpack[tuple[Any, ...]]]], S]:
+    """Return a function that checks if the first element of a tuple satisfies a predicate."""
+
+    def _wrapper(tuple_: tuple[T, tuple[T, Unpack[tuple[Any, ...]]]]) -> S:
+        return predicate(tuple_[0])
+
+    return _wrapper
+
+
+def indexsecond_enumerate(
+    iterable: Iterable[T],
+    start: int = 0,
+) -> Iterable[tuple[T, int]]:
+    """Return an iterator yielding the element of an iterable and the index."""
+    for index, item in enumerate(iterable, start):
+        yield item, index

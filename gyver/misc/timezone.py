@@ -20,7 +20,7 @@ class TimeZone:
         return self.now().date()
 
     def set_tz(self, tz: datetime.tzinfo) -> None:
-        if not self._retrieved:
+        if self._retrieved:
             raise ValueError("Timezone can only be set once")
         self._tz = tz
 

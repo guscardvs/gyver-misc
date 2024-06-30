@@ -111,3 +111,75 @@ class RuntimeAutoDiscovery:
             dict[str, Any]: Dictionary mapping module names to their corresponding objects.
         """
         return dict(self.load())
+
+    def __iter__(self):
+        yield from self.load()
+
+
+def runtime_child_of(parent_class: type) -> Callable[[Any], bool]:
+    """
+    Returns a function that checks if an object is a subclass (or instance) of `parent_class`.
+
+    Args:
+        parent_class (type): The class or type to check against.
+
+    Returns:
+        Callable[[Any], bool]: Function that checks if an object is a subclass or instance of `parent_class`.
+    """
+
+    def check(obj: Any) -> bool:
+        return isinstance(obj, type) and issubclass(obj, parent_class)
+
+    return check
+
+
+def runtime_instance_of(*bases: type) -> Callable[[Any], bool]:
+    """
+    Returns a function that validates instances of specified types in runtime.
+
+    Args:
+        *bases (type): Variable-length argument list of types to validate against.
+
+    Returns:
+        Callable[[Any], bool]: Function that validates instances of specified types.
+    """
+
+    def check(obj: Any) -> bool:
+        return isinstance(obj, bases)
+
+    return check
+
+
+def runtime_contains_attr(attr_name: str) -> Callable[[Any], bool]:
+    """
+    Returns a function that checks if an object contains an attribute `attr_name`.
+
+    Args:
+        attr_name (str): The attribute name to check for.
+
+    Returns:
+        Callable[[Any], bool]: Function that checks if an object contains the specified attribute.
+    """
+
+    def check(obj: Any) -> bool:
+        return hasattr(obj, attr_name)
+
+    return check
+
+
+def runtime_attr_with_value(attr_name: str, attr_value: Any) -> Callable[[Any], bool]:
+    """
+    Returns a function that checks if an object has an attribute `attr_name` with a specific `attr_value`.
+
+    Args:
+        attr_name (str): The attribute name to check for.
+        attr_value (Any): The expected value of the attribute.
+
+    Returns:
+        Callable[[Any], bool]: Function that checks if the object has the specified attribute with the specified value.
+    """
+
+    def check(obj: Any) -> bool:
+        return hasattr(obj, attr_name) and getattr(obj, attr_name) == attr_value
+
+    return check

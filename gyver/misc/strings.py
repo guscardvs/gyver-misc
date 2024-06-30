@@ -21,12 +21,22 @@ _to_camel_regexp = re.compile("(_|-)([a-zA-Z])")
 _to_snake_regexp = re.compile("([a-z])([A-Z])")
 
 
+def replace_all(string: str, replacements: dict[str, str]) -> str:
+    for old, new in replacements.items():
+        string = string.replace(old, new)
+    return string
+
+
 def to_snake(string: str) -> str:
-    return _to_snake_regexp.sub(r"\1_\2", string).replace("-", "_").lower()
+    return replace_all(
+        _to_snake_regexp.sub(r"\1_\2", string), {"-": "_", " ": "_"}
+    ).lower()
 
 
 def to_camel(string: str) -> str:
-    return _to_camel_regexp.sub(lambda match: match[2].upper(), string).rstrip("_-")
+    return _to_camel_regexp.sub(
+        lambda match: match[2].upper(), to_snake(string)
+    ).rstrip("_-")
 
 
 def to_pascal(string: str) -> str:
@@ -37,8 +47,9 @@ def to_pascal(string: str) -> str:
 upper_camel = deprecated('Use "to_pascal" instead.')(to_pascal)
 
 
-def to_kebab(string: str) -> str:
-    return to_snake(string).replace("_", "-")
+def to_kebab(string: str, remove_trailing_underscores: bool = False) -> str:
+    result = to_snake(string).replace("_", "-")
+    return result if not remove_trailing_underscores else result.rstrip("-")
 
 
 def make_lex_separator(
@@ -51,6 +62,10 @@ def make_lex_separator(
         return outer_cast(cast(item.strip()) for item in lex)
 
     return wrapper
+
+
+def quote(string: str, quote_char: str = '"') -> str:
+    return f"{quote_char}{string}{quote_char}"
 
 
 comma_separator = make_lex_separator(tuple, str)

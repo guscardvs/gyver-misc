@@ -3,6 +3,7 @@ import importlib
 import os
 import pathlib
 import sys
+import warnings
 from collections import defaultdict
 from collections.abc import Callable, Iterator, Sequence
 from inspect import getsourcelines
@@ -134,7 +135,7 @@ def sort_files_by_dependency(modnames: list[str], files: list[Path]) -> Iterator
                             dependencies[modname].add(node.module)
         except SyntaxError:
             # Handle syntax errors in the files gracefully
-            print(f"SyntaxError: Unable to parse file {file}")
+            warnings.warn(f"SyntaxError: Unable to parse file {file}")
             continue
 
     # Step 2: Perform topological sorting based on dependencies
@@ -153,7 +154,7 @@ def sort_files_by_dependency(modnames: list[str], files: list[Path]) -> Iterator
         dfs(modname)
 
     # Map sorted module names back to files
-    for modname in reversed(sorted_files):
+    for modname in sorted_files:
         for file, mod in zip(files, modnames):
             if mod == modname:
                 yield file

@@ -4,7 +4,6 @@ from functools import wraps
 from typing import (
     Any,
     Concatenate,
-    Iterator,
     ParamSpec,
     TypeAlias,
     TypeVar,
@@ -76,8 +75,19 @@ def as_async(
     return outer(func)
 
 
-def filter_isinstance(bases: type[T], iterable: Iterable[Any]) -> Iterator[T]:
+def filter_isinstance(
+    bases: type[T] | tuple[type[T], ...], iterable: Iterable[Any]
+) -> "filter[T]":
     def _predicate(item: T) -> bool:
         return isinstance(item, bases)
+
+    return filter(_predicate, iterable)
+
+
+def filter_issubclass(
+    bases: type[T] | tuple[type[T], ...], iterable: Iterable[Any]
+) -> "filter[T]":
+    def _predicate(item: T) -> bool:
+        return isinstance(item, type) and issubclass(item, bases)
 
     return filter(_predicate, iterable)
