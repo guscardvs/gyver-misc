@@ -3,7 +3,7 @@ name = "gyver-misc"
 version = "0.2.0"
 description = ""
 authors = ["Gustavo Cardoso <self.gustavocorrea@gmail.com>"]
-readme = "README.md"
+# readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
