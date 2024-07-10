@@ -16,7 +16,7 @@ from gyver.misc.functions import lazymethod
 
 PathConverter: TypeAlias = Callable[[Path], str]
 StrOrPath: TypeAlias = str | Path
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 def make_modulename_converter(
@@ -28,7 +28,7 @@ def make_modulename_converter(
         pathstr = path_converter(path)
         if root_path in pathstr:
             pathstr = pathstr.replace(root_path, root.name)
-        return pathstr.removesuffix(".py").replace("/", ".")
+        return pathstr.removesuffix('.py').replace('/', '.')
 
     return converter
 
@@ -46,13 +46,13 @@ class AutoDiscoveryHelper:
     """
 
     __slots__ = (
-        "_root",
-        "_look_on",
-        "_exclude",
-        "_exts",
-        "_converter",
-        lazymethod.get_private("get_resolver"),
-        lazymethod.get_private("_excludes"),
+        '_root',
+        '_look_on',
+        '_exclude',
+        '_exts',
+        '_converter',
+        lazymethod.get_private('get_resolver'),
+        lazymethod.get_private('_excludes'),
     )
 
     def __init__(
@@ -65,8 +65,8 @@ class AutoDiscoveryHelper:
     ):
         self._root = root
         self._look_on = look_on
-        self._exclude = ("__pycache__", *exclude)
-        self._exts = (".py", *exts)
+        self._exclude = ('__pycache__', *exclude)
+        self._exts = ('.py', *exts)
         self._converter = converter
 
     @lazymethod
@@ -123,19 +123,19 @@ def sort_files_by_dependency(modnames: list[str], files: list[Path]) -> Iterator
     dependencies = defaultdict(set)
     for modname, file in zip(modnames, files):
         try:
-            with file.open("r", encoding="utf-8") as f:
+            with file.open('r', encoding='utf-8') as f:
                 module_ast = ast.parse(f.read(), filename=str(file))
                 for node in ast.walk(module_ast):
                     if isinstance(node, ast.Import):
                         for alias in node.names:
-                            if alias.name != "__future__":
+                            if alias.name != '__future__':
                                 dependencies[modname].add(alias.name)
                     elif isinstance(node, ast.ImportFrom):
                         if node.module:
                             dependencies[modname].add(node.module)
         except SyntaxError:
             # Handle syntax errors in the files gracefully
-            warnings.warn(f"SyntaxError: Unable to parse file {file}")
+            warnings.warn(f'SyntaxError: Unable to parse file {file}')
             continue
 
     # Step 2: Perform topological sorting based on dependencies
@@ -171,12 +171,12 @@ def smart_import(modfullname: str, resolver: PathConverter) -> ModuleType:
     Returns:
         ModuleType: Imported module.
     """
-    *_, modname = modfullname.rsplit(".", 1)
+    *_, modname = modfullname.rsplit('.', 1)
     if modname in sys.modules:
         return sys.modules[modname]
 
-    main = sys.modules.get("__main__")
-    main_modname = ""
+    main = sys.modules.get('__main__')
+    main_modname = ''
     if main and main.__file__:
         main_modname = resolver(Path(main.__file__))
 

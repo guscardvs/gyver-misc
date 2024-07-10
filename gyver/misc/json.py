@@ -11,7 +11,7 @@ def dumps(
     default: Callable[[Any], Any] | None = None,
     option: int | None = None,
 ) -> str:
-    return orjson.dumps(val, default=default, option=option).decode("utf-8")
+    return orjson.dumps(val, default=default, option=option).decode('utf-8')
 
 
 def load(fdes: BinaryIO | TextIO) -> Any:

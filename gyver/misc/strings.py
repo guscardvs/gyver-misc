@@ -6,19 +6,19 @@ from typing import TypeVar
 from typing_extensions import deprecated
 
 __all__ = [
-    "to_snake",
-    "to_camel",
-    "to_pascal",
-    "to_kebab",
-    "make_lex_separator",
-    "comma_separator",
+    'to_snake',
+    'to_camel',
+    'to_pascal',
+    'to_kebab',
+    'make_lex_separator',
+    'comma_separator',
 ]
 
-T = TypeVar("T")
-OuterCastT = TypeVar("OuterCastT", list, tuple, set)
+T = TypeVar('T')
+OuterCastT = TypeVar('OuterCastT', list, tuple, set)
 
-_to_camel_regexp = re.compile("(_|-)([a-zA-Z])")
-_to_snake_regexp = re.compile("([a-z])([A-Z])")
+_to_camel_regexp = re.compile('(_|-)([a-zA-Z])')
+_to_snake_regexp = re.compile('([a-z])([A-Z])')
 
 
 def replace_all(string: str, replacements: dict[str, str]) -> str:
@@ -29,14 +29,14 @@ def replace_all(string: str, replacements: dict[str, str]) -> str:
 
 def to_snake(string: str) -> str:
     return replace_all(
-        _to_snake_regexp.sub(r"\1_\2", string), {"-": "_", " ": "_"}
+        _to_snake_regexp.sub(r'\1_\2', string), {'-': '_', ' ': '_'}
     ).lower()
 
 
 def to_camel(string: str) -> str:
     return _to_camel_regexp.sub(
         lambda match: match[2].upper(), to_snake(string)
-    ).rstrip("_-")
+    ).rstrip('_-')
 
 
 def to_pascal(string: str) -> str:
@@ -48,8 +48,8 @@ upper_camel = deprecated('Use "to_pascal" instead.')(to_pascal)
 
 
 def to_kebab(string: str, remove_trailing_underscores: bool = False) -> str:
-    result = to_snake(string).replace("_", "-")
-    return result if not remove_trailing_underscores else result.rstrip("-")
+    result = to_snake(string).replace('_', '-')
+    return result if not remove_trailing_underscores else result.rstrip('-')
 
 
 def make_lex_separator(
@@ -57,7 +57,7 @@ def make_lex_separator(
 ) -> Callable[[str], OuterCastT]:
     def wrapper(value: str) -> OuterCastT:
         lex = shlex.shlex(value, posix=True)
-        lex.whitespace = ","
+        lex.whitespace = ','
         lex.whitespace_split = True
         return outer_cast(cast(item.strip()) for item in lex)
 
@@ -65,7 +65,7 @@ def make_lex_separator(
 
 
 def quote(string: str, quote_char: str = '"') -> str:
-    return f"{quote_char}{string}{quote_char}"
+    return f'{quote_char}{string}{quote_char}'
 
 
 comma_separator = make_lex_separator(tuple, str)

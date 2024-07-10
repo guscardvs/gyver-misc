@@ -7,7 +7,7 @@ from collections.abc import (
 )
 from typing import TypeVar
 
-T = TypeVar("T")
+T = TypeVar('T')
 
 
 async def aenumerate(

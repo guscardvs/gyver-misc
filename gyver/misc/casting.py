@@ -10,8 +10,8 @@ from typing import (
     overload,
 )
 
-T = TypeVar("T")
-P = ParamSpec("P")
+T = TypeVar('T')
+P = ParamSpec('P')
 
 
 def safe_cast(
@@ -77,7 +77,7 @@ def as_async(
 
 def filter_isinstance(
     bases: type[T] | tuple[type[T], ...], iterable: Iterable[Any]
-) -> "filter[T]":
+) -> 'filter[T]':
     def _predicate(item: T) -> bool:
         return isinstance(item, bases)
 
@@ -86,7 +86,7 @@ def filter_isinstance(
 
 def filter_issubclass(
     bases: type[T] | tuple[type[T], ...], iterable: Iterable[Any]
-) -> "filter[T]":
+) -> 'filter[T]':
     def _predicate(item: T) -> bool:
         return isinstance(item, type) and issubclass(item, bases)
 

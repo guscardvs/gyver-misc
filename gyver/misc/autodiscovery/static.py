@@ -63,12 +63,12 @@ class StaticAutoDiscovery:
     """
 
     __slots__ = (
-        "_internal",
-        "_validator",
-        "_rounds",
-        "_cache",
-        "_returned",
-        lazymethod.get_private("load"),
+        '_internal',
+        '_validator',
+        '_rounds',
+        '_cache',
+        '_returned',
+        lazymethod.get_private('load'),
     )
 
     def __init__(
@@ -131,7 +131,7 @@ class StaticAutoDiscovery:
         Returns:
             str: Contents of the module as a string.
         """
-        with path.open("r", encoding="utf-8") as stream:
+        with path.open('r', encoding='utf-8') as stream:
             return stream.read()
 
     def _import_module(
@@ -167,7 +167,7 @@ class NOT_FOUND:
     pass
 
 
-def static_autoload_validator(comment: str = "# static: autoload"):
+def static_autoload_validator(comment: str = '# static: autoload'):
     """
     Returns a function to validate modules containing a specific autoload comment.
 
@@ -181,7 +181,7 @@ def static_autoload_validator(comment: str = "# static: autoload"):
     def check(
         cachemap: CacheMap, module_contents: str, modname: str
     ) -> Iterator[tuple[ObjectName, WantsToReturn]]:
-        contents = BytesIO(module_contents.encode("utf-8"))
+        contents = BytesIO(module_contents.encode('utf-8'))
         try:
             return next(
                 (
@@ -243,7 +243,7 @@ def static_instance_of(
     *bases: type,
 ) -> Validator:
     return static_chain_validate(
-        "last",
+        'last',
         static_child_of(*bases),
         _static_instance_of(*bases),
     )
@@ -329,7 +329,7 @@ def _static_instance_of(
 
 
 def static_chain_validate(
-    mode: Literal["any", "last"], *validators: Validator
+    mode: Literal['any', 'last'], *validators: Validator
 ) -> Validator:
     """
     Chains multiple validators into a single function with specified validation mode.
@@ -345,7 +345,7 @@ def static_chain_validate(
     def composite_validator(
         *args, **kwargs
     ) -> Iterator[tuple[ObjectName, WantsToReturn]]:
-        if mode == "any":
+        if mode == 'any':
             for validator in validators:
                 result = validator(*args, **kwargs)
                 if result is None:
@@ -353,7 +353,7 @@ def static_chain_validate(
                 for item, wants in result:
                     yield (item, True if wants is None else wants)
             return None
-        elif mode == "last":
+        elif mode == 'last':
             for validator in validators[:-1]:
                 for item, _ in validator(*args, **kwargs):
                     yield (item, False)

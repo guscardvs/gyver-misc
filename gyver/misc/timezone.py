@@ -21,7 +21,7 @@ class TimeZone:
 
     def set_tz(self, tz: datetime.tzinfo) -> None:
         if self._retrieved:
-            raise ValueError("Timezone can only be set once")
+            raise ValueError('Timezone can only be set once')
         self._tz = tz
 
 
@@ -38,4 +38,4 @@ def make_now_factory(tz: datetime.tzinfo) -> Callable[[], datetime.datetime]:
     return TimeZone(tz).now
 
 
-__all__ = ["now", "today", "set_tz", "TimeZone"]
+__all__ = ['now', 'today', 'set_tz', 'TimeZone']

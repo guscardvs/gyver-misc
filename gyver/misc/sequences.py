@@ -1,15 +1,15 @@
 import itertools
 from collections import deque
 from collections.abc import Callable, Iterable, Iterator, Sequence
-from typing import Any, Literal, ParamSpec, TypeVar
+from typing import Any, Literal, ParamSpec, TypeAlias, TypeVar
 
 from typing_extensions import Unpack
 
 from gyver.misc.casting import safe_cast
 
-T = TypeVar("T")
-P = ParamSpec("P")
-S = TypeVar("S")
+T = TypeVar('T')
+P = ParamSpec('P')
+S = TypeVar('S')
 
 
 def moving_window(
@@ -54,7 +54,7 @@ def flatten(sequence: Sequence) -> Sequence:
 def merge_dicts(
     left: dict,
     right: dict,
-    on_conflict: Literal["strict", "left", "right"],
+    on_conflict: Literal['strict', 'left', 'right'],
     merge_sequences: bool = True,
 ) -> dict:
     """
@@ -94,7 +94,7 @@ def merge_dicts(
             elif isinstance(value, (list, set, tuple)) and merge_sequences:
                 left_val = left_curr[key]
                 if isinstance(left_val, (list, set, tuple)):
-                    type_ = type(value) if on_conflict == "right" else type(left_val)
+                    type_ = type(value) if on_conflict == 'right' else type(left_val)
                     output_curr[key] = type_(itertools.chain(left_val, value))
             elif isinstance(value, dict):
                 if isinstance(left_curr[key], dict):
@@ -104,14 +104,14 @@ def merge_dicts(
                         if lkey not in value
                     }
                     stack.append((left_curr[key], value, output_curr[key]))
-            elif on_conflict not in ("left", "right"):
+            elif on_conflict not in ('left', 'right'):
                 raise ValueError(
-                    "Conflict found when trying to merge dicts",
+                    'Conflict found when trying to merge dicts',
                     key,
                     value,
                     left_curr[key],
                 )
-            elif on_conflict == "left":
+            elif on_conflict == 'left':
                 output_curr[key] = left_curr[key]
             else:
                 output_curr[key] = value
@@ -137,3 +137,65 @@ def indexsecond_enumerate(
     """Return an iterator yielding the element of an iterable and the index."""
     for index, item in enumerate(iterable, start):
         yield item, index
+
+
+SeqTypes: TypeAlias = list | dict | set | tuple
+
+SequenceT = TypeVar('SequenceT', bound=SeqTypes)
+
+
+def exclude_none(sequence: SequenceT) -> SequenceT:
+    """
+    Recursively filters out `None` values from sequences (dict, list, set, tuple) and their nested elements.
+
+    Args:
+        sequence (SequenceT): The sequence to filter.
+
+    Returns:
+        SequenceT: Filtered sequence with `None` values removed.
+
+    Raises:
+        TypeError: If `sequence` is not of a supported type (dict, list, set, tuple).
+
+    Notes:
+        - Tuple typing will not be preserved due to Python's immutability of tuples.
+    """
+    if not isinstance(sequence, SeqTypes):
+        raise TypeError(
+            'Unsupported type. Only dict, list, set and tuple are supported.'
+        )
+    outer_acc = type(sequence)() if not isinstance(sequence, tuple) else []
+    stack: list[tuple[SequenceT, SequenceT]] = [(sequence, outer_acc)]
+
+    while stack:
+        curr, acc = stack.pop()
+
+        if isinstance(curr, dict):
+            for key, value in curr.items():
+                if value is None:
+                    continue
+                if isinstance(value, SeqTypes):
+                    new_acc = type(value)() if not isinstance(value, tuple) else []
+                    acc[key] = new_acc
+                    stack.append((value, new_acc))
+                else:
+                    acc[key] = value
+        elif isinstance(curr, list | set | tuple):
+            temp_acc = []
+            for item in curr:
+                if item is None:
+                    continue
+                if isinstance(item, SeqTypes):
+                    new_acc = type(item)() if not isinstance(item, tuple) else []
+                    temp_acc.append(new_acc)
+                    stack.append((item, new_acc))
+                else:
+                    temp_acc.append(item)
+            if isinstance(curr, list):
+                acc.extend(temp_acc)
+            elif isinstance(curr, set):
+                acc.update(temp_acc)
+            elif isinstance(curr, tuple):
+                acc.extend(temp_acc)
+
+    return outer_acc

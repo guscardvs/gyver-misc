@@ -47,7 +47,7 @@ def test_sort_files_by_dependency(sample_root_path, sample_files):
 
     modnames = list(map(converter, sample_files))
     sorted_files = list(sort_files_by_dependency(modnames, sample_files))
-    expected_order = ["__init__", "mod_a", "mod_b", "mod_c", "auto"]
+    expected_order = ["__init__", "auto", "mod_a", "mod_b", "mod_c"]
     assert list(map(get_name, sorted_files)) == expected_order
 
 

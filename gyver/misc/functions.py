@@ -4,9 +4,9 @@ from typing import Generic, ParamSpec, TypeVar, cast, overload
 
 from typing_extensions import Self
 
-T = TypeVar("T")
-P = ParamSpec("P")
-SelfT = TypeVar("SelfT")
+T = TypeVar('T')
+P = ParamSpec('P')
+SelfT = TypeVar('SelfT')
 
 
 def cache(f: Callable[P, T]) -> Callable[P, T]:
@@ -14,9 +14,9 @@ def cache(f: Callable[P, T]) -> Callable[P, T]:
 
 
 class lazymethod(Generic[SelfT, T]):
-    __slots__ = ("_func", "public_name", "private_name")
+    __slots__ = ('_func', 'public_name', 'private_name')
 
-    format_ = "_lazymethod_{method_name}_"
+    format_ = '_lazymethod_{method_name}_'
 
     def __init__(self, func: Callable[[SelfT], T]) -> None:
         self._func = func

@@ -42,7 +42,7 @@ class RuntimeAutoDiscovery:
             print(f"Loaded module: {name}")
     """
 
-    __slots__ = ("_internal", "_validator", lazymethod.get_private("load"))
+    __slots__ = ('_internal', '_validator', lazymethod.get_private('load'))
 
     def __init__(
         self,

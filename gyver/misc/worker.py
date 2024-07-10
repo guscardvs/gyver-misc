@@ -7,14 +7,14 @@ from typing_extensions import Self
 
 from gyver.misc.casting import filter_isinstance
 
-T = TypeVar("T", bound=Hashable)
-R = TypeVar("R")
+T = TypeVar('T', bound=Hashable)
+R = TypeVar('R')
 
 
 class WorkerQueue(Generic[T, R]):
     """A queue that processes items asynchronously with a worker function and caching."""
 
-    _global_registry: ClassVar[dict[int, "WorkerQueue"]] = {}
+    _global_registry: ClassVar[dict[int, 'WorkerQueue']] = {}
 
     def __new__(cls, *args, **kwargs) -> Self:
         """Creates and registers a new instance of WorkerQueue.
@@ -111,7 +111,7 @@ class WorkerQueue(Generic[T, R]):
             excs = (excs or []) + timeouts
         if excs:
             raise exceptiongroup.ExceptionGroup(
-                "WorkerQueue stopped due to the following exceptions", excs
+                'WorkerQueue stopped due to the following exceptions', excs
             )
 
     async def _handle_request(self) -> None:
