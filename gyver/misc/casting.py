@@ -46,10 +46,6 @@ def as_async(
 def as_async(
     func: Callable[P, T],
     /,
-    *,
-    cast: Callable[
-        Concatenate[Callable[P, T], P], Coroutine[Any, Any, T]
-    ] = asyncio.to_thread,
 ) -> AsyncFunc[P, T]: ...
 
 
