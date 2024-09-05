@@ -1,3 +1,9 @@
+## 0.4.0 (2024-09-05)
+
+### Feat
+
+- **asynciter**: added amap, afilter, aall, aany and agetn_and_exhaust functions
+
 ## 0.3.1 (2024-07-18)
 
 ### Fix
