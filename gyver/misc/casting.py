@@ -49,8 +49,15 @@ def as_async(
 ) -> AsyncFunc[P, T]: ...
 
 
+@overload
 def as_async(
-    func: Callable[P, T] | None = None,
+    func: AsyncFunc[P, T],
+    /,
+) -> AsyncFunc[P, T]: ...
+
+
+def as_async(
+    func: Callable[P, T] | AsyncFunc[P, T] | None = None,
     /,
     *,
     cast: Callable[
@@ -60,6 +67,9 @@ def as_async(
     """Convert a synchronous function to an asynchronous one."""
 
     def outer(func: Callable[P, T]) -> AsyncFunc[P, T]:
+        if asyncio.iscoroutinefunction(func):
+            return func
+
         @wraps(func)
         async def _inner(*args: P.args, **kwargs: P.kwargs) -> T:
             return await cast(func, *args, **kwargs)
