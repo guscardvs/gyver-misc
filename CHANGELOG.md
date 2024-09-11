@@ -1,3 +1,9 @@
+## 0.5.0 (2024-09-11)
+
+### Feat
+
+- **enums**: added enums package to have strenum boilerplate code and added maybe_next and maybe_anext functions
+
 ## 0.4.0 (2024-09-05)
 
 ### Feat
