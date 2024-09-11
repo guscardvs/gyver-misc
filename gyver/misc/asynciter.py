@@ -92,3 +92,7 @@ async def agetn_and_exhaust(iterable: AsyncIterable[T], n: int) -> Sequence[T]:
     async for _ in gen:
         pass
     return window
+
+
+async def maybe_anext(iterable: AsyncIterable[T]) -> T | None:
+    return await anext(aiter(iterable), None)

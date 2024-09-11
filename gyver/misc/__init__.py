@@ -1,6 +1,6 @@
 __version__ = '0.1.0'
 
-from . import exc, json, strings, timezone
+from . import enums, exc, json, strings, timezone
 from .asynciter import (
     aall,
     aany,
@@ -10,6 +10,7 @@ from .asynciter import (
     amap,
     amoving_window,
     as_async_generator,
+    maybe_anext,
 )
 from .casting import as_async, filter_isinstance, filter_issubclass, safe_cast
 from .functions import cache, lazymethod
@@ -17,6 +18,7 @@ from .sequences import (
     exclude_none,
     flatten,
     indexsecond_enumerate,
+    maybe_next,
     merge_dicts,
     moving_window,
     predicate_from_first,
@@ -49,4 +51,7 @@ __all__ = [
     'afilter',
     'amap',
     'agetn_and_exhaust',
+    'maybe_anext',
+    'maybe_next',
+    'enums',
 ]

@@ -1,7 +1,7 @@
 import pytest
 
 from gyver.misc import flatten, moving_window
-from gyver.misc.sequences import exclude_none
+from gyver.misc.sequences import exclude_none, maybe_next
 
 
 def test_flatten():
@@ -54,3 +54,11 @@ def test_exclude_none_empty():
 def test_exclude_none_invalid_type():
     with pytest.raises(TypeError):
         exclude_none('invalid')
+
+
+def test_maybe_next():
+    sequence = [1, 2, 3, 4, 5]
+
+    assert maybe_next(item for item in sequence if item == 1) == 1
+    assert maybe_next(item for item in sequence if item < 1) is None
+    assert maybe_next(reversed(sequence)) == 5

@@ -1,7 +1,14 @@
 import asyncio
 
 from gyver.misc import aenumerate, amoving_window, as_async_generator
-from gyver.misc.asynciter import aall, aany, afilter, agetn_and_exhaust, amap
+from gyver.misc.asynciter import (
+    aall,
+    aany,
+    afilter,
+    agetn_and_exhaust,
+    amap,
+    maybe_anext,
+)
 
 
 async def test_aenumerate():
@@ -77,3 +84,21 @@ async def test_agetn_and_exhaust():
     window = await agetn_and_exhaust(generator(5), 3)
     assert counter == 5
     assert window == [0, 1, 2]
+
+
+async def test_maybe_anext():
+    sequence = [1, 2, 3, 4, 5]
+
+    async def _generate():
+        for item in reversed(sequence):
+            yield item
+
+    assert (
+        await maybe_anext(as_async_generator(item for item in sequence if item == 1))
+        == 1
+    )
+    assert (
+        await maybe_anext(as_async_generator(item for item in sequence if item < 1))
+        is None
+    )
+    assert await maybe_anext(_generate()) == 5

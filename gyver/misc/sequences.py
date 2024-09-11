@@ -199,3 +199,7 @@ def exclude_none(sequence: SequenceT) -> SequenceT:
                 acc.extend(temp_acc)
 
     return outer_acc
+
+
+def maybe_next(iterable: Iterable[T]) -> T | None:
+    return next(iter(iterable), None)
