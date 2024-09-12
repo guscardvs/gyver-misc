@@ -34,14 +34,28 @@ def test_lazymethod():
         @lazymethod
         def calculate_name(self):
             self.counter += 1
-            return "test_" + str(self.counter)
+            return 'test_' + str(self.counter)
+
+        @lazymethod
+        def calculate_custom_name(self, name: str | None):
+            self.counter += 1
+            return f'test_{name or ""}' + str(self.counter)
+
+        @lazymethod
+        def calculate_complex_naming(self, names: list[str]):
+            self.counter += 1
+            return ', '.join(f'test_{name}' + str(self.counter) for name in names)
 
     t = Test()
     t2 = Test()
-    assert t.calculate_name() == "test_1"
-    assert t.calculate_name() == "test_1"
+    assert t.calculate_name() == 'test_1'
+    assert t.calculate_name() == 'test_1'
+    assert t.calculate_custom_name('1') == 'test_12'
+    assert t.calculate_custom_name('1') == 'test_12'
+    assert t.calculate_complex_naming(['1', '2']) == 'test_13, test_23'
+    assert t.calculate_complex_naming(['1', '2']) == 'test_13, test_23'
 
-    assert lazymethod.is_initialized(t, "calculate_name")
-    assert not lazymethod.is_initialized(t2, "calculate_name")
+    assert lazymethod.is_initialized(t, 'calculate_name')
+    assert not lazymethod.is_initialized(t2, 'calculate_name')
 
-    assert t2.calculate_name() == "test_1"
+    assert t2.calculate_name() == 'test_1'

@@ -1,6 +1,18 @@
 import functools
-from collections.abc import Callable
-from typing import Generic, ParamSpec, TypeVar, cast, overload
+from collections.abc import Callable, Hashable, Sequence
+from enum import Enum
+from inspect import signature
+from typing import (
+    Any,
+    Concatenate,
+    Generic,
+    ParamSpec,
+    TypeVar,
+    cast,
+    get_args,
+    get_origin,
+    overload,
+)
 
 from typing_extensions import Self
 
@@ -13,13 +25,53 @@ def cache(f: Callable[P, T]) -> Callable[P, T]:
     return cast(Callable[P, T], functools.cache(f))
 
 
-class lazymethod(Generic[SelfT, T]):
-    __slots__ = ('_func', 'public_name', 'private_name')
+class MethodType(Enum):
+    SELF_ONLY = 0
+    HASHABLE_ARGS = 1
+    UNKNOWN_OR_UNHASHABLE = 2
+
+
+class lazymethod(Generic[SelfT, T, P]):
+    __slots__ = ('_func', 'public_name', 'private_name', '_method_type', '_container')
 
     format_ = '_lazymethod_{method_name}_'
 
-    def __init__(self, func: Callable[[SelfT], T]) -> None:
+    def __init__(self, func: Callable[Concatenate[SelfT, P], T]) -> None:
         self._func = func
+        self._method_type = self._determine_method_type(func)
+        self._container = self._get_container()
+
+    def _determine_method_type(self, func: Callable) -> MethodType:
+        sig = signature(func)
+        if len(sig.parameters) == 1:
+            return MethodType.SELF_ONLY
+        elif all(
+            param.annotation is not param.empty and self._is_hashable(param.annotation)
+            for param in tuple(sig.parameters.values())[1:]
+        ):
+            return MethodType.HASHABLE_ARGS
+        else:
+            return MethodType.UNKNOWN_OR_UNHASHABLE
+
+    def _is_hashable(self, annotation: Any) -> bool:
+        if origin := get_origin(annotation):
+            args = get_args(annotation)
+            print(origin, args)
+            return self._is_hashable(origin) and all(
+                self._is_hashable(arg) for arg in args
+            )
+        if isinstance(annotation, type):
+            return issubclass(annotation, Hashable)
+        return False
+
+    def _get_container(self) -> type[dict[Hashable, T] | list[tuple[Any, T]]] | None:
+        match self._method_type:
+            case MethodType.SELF_ONLY:
+                return None
+            case MethodType.HASHABLE_ARGS:
+                return dict
+            case MethodType.UNKNOWN_OR_UNHASHABLE:
+                return list
 
     def __set_name__(self, owner: type[SelfT], name: str) -> None:
         self.public_name = name
@@ -33,28 +85,69 @@ class lazymethod(Generic[SelfT, T]):
     def __get__(self, instance: None, owner: type[SelfT]) -> Self: ...
 
     @overload
-    def __get__(self, instance: SelfT, owner: type[SelfT]) -> Callable[[], T]: ...
+    def __get__(self, instance: SelfT, owner: type[SelfT]) -> Callable[P, T]: ...
 
     def __get__(
         self, instance: SelfT | None, owner: type[SelfT]
-    ) -> Callable[[], T] | Self:
+    ) -> Callable[P, T] | Self:
         if instance is None:
             return self
         return self._call(instance)
 
-    def _call(self, instance: SelfT) -> Callable[[], T]:
+    def _call(self, instance: SelfT) -> Callable[P, T]:
         @functools.wraps(self._func)
-        def _callable() -> T:
-            if hasattr(instance, self.private_name):
-                return getattr(instance, self.private_name)
-            return self._set(instance)
+        def _callable(*args: P.args, **kwargs: P.kwargs) -> T:
+            if (
+                value := self._get(
+                    instance,
+                    self.private_name,
+                    args,
+                    kwargs,
+                )
+            ) is not None:
+                return value
+            return self._set(instance, *args, **kwargs)
 
         return _callable
 
-    def _set(self, instance: SelfT) -> T:
-        value = self._func(instance)
-        setattr(instance, self.private_name, value)
+    def _set(self, instance: SelfT, *args: P.args, **kwargs: P.kwargs) -> T:
+        value = self._func(instance, *args, **kwargs)
+        if self._container is None:
+            setattr(instance, self.private_name, value)
+        elif self._container is dict:
+            container = cast(
+                dict[Hashable, T],
+                getattr(instance, self.private_name, self._container()),
+            )
+            container[(*args, tuple(kwargs.items()))] = value
+            setattr(instance, self.private_name, container)
+        elif self._container is list:
+            container = cast(
+                list[tuple[Any, T]],
+                getattr(instance, self.private_name, self._container()),
+            )
+            container.append(((*args, tuple(kwargs.items())), value))
+            setattr(instance, self.private_name, container)
         return value
+
+    def _get(
+        self, instance: SelfT, name: str, args: Sequence[Any], kwargs: dict[str, Any]
+    ) -> T | None:
+        if self._container is None:
+            return getattr(instance, name, None)
+        elif self._container is dict:
+            container = getattr(instance, name, None)
+            if container is None:
+                return None
+            return container.get((*args, tuple(kwargs.items())))
+        elif self._container is list:
+            container = getattr(instance, name, None)
+            if container is None:
+                return None
+            for item in container:
+                if item[0] == (*args, tuple(kwargs.items())):
+                    return item[1]
+            return None
 
     @classmethod
     def is_initialized(cls, instance: SelfT, name: str) -> bool:
