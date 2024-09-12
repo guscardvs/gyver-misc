@@ -1,3 +1,9 @@
+## 0.5.1 (2024-09-12)
+
+### Fix
+
+- now lazymethod supports N args instead of only self
+
 ## 0.5.0 (2024-09-11)
 
 ### Feat
