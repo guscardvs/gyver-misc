@@ -1,3 +1,9 @@
+## 0.5.2 (2024-09-13)
+
+### Fix
+
+- **strings**: added convert function
+
 ## 0.5.1 (2024-09-12)
 
 ### Fix
