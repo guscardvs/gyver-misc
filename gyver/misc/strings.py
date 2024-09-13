@@ -1,7 +1,7 @@
 import re
 import shlex
 from collections.abc import Callable
-from typing import TypeVar
+from typing import Any, TypeVar
 
 from typing_extensions import deprecated
 
@@ -69,3 +69,7 @@ def quote(string: str, quote_char: str = '"') -> str:
 
 
 comma_separator = make_lex_separator(tuple, str)
+
+
+def convert(obj: dict[str, Any], key_format: Callable[[str], str]) -> dict[str, Any]:
+    return {key_format(key): value for key, value in obj.items()}
