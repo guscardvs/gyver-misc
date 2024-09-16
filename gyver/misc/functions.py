@@ -56,7 +56,6 @@ class lazymethod(Generic[SelfT, T, P]):
     def _is_hashable(self, annotation: Any) -> bool:
         if origin := get_origin(annotation):
             args = get_args(annotation)
-            print(origin, args)
             return self._is_hashable(origin) and all(
                 self._is_hashable(arg) for arg in args
             )
