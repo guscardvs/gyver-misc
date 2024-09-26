@@ -12,7 +12,13 @@ from .asynciter import (
     as_async_generator,
     maybe_anext,
 )
-from .casting import as_async, filter_isinstance, filter_issubclass, safe_cast, asafe_cast
+from .casting import (
+    as_async,
+    asafe_cast,
+    filter_isinstance,
+    filter_issubclass,
+    safe_cast,
+)
 from .functions import cache, lazymethod
 from .sequences import (
     exclude_none,
@@ -54,4 +60,5 @@ __all__ = [
     'maybe_anext',
     'maybe_next',
     'enums',
+    'asafe_cast',
 ]
