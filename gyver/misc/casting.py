@@ -30,6 +30,18 @@ def safe_cast(
 
 AsyncFunc: TypeAlias = Callable[P, Coroutine[Any, Any, T]]
 
+async def asafe_cast(
+        target_type: AsyncFunc[[Any], T],
+        value: Any,
+        *,
+        default: T | None = None,
+        ignore_childof: tuple[type[Exception], ...] = (ValueError, TypeError),
+) -> T | None:
+    """Cast value to target_type if possible, otherwise return default."""
+    try:
+        return await target_type(value)
+    except ignore_childof:
+        return default
 
 @overload
 def as_async(
