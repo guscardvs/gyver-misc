@@ -1,3 +1,10 @@
+## 0.5.6 (2024-10-13)
+
+### Fix
+
+- add namespace and remove redundant code
+- added asafe_generator decorator to use aclosing and avoid resource leakage on pypy and using object.__setattr__ at lazymethod to avoid conflicts with gyver.attrs
+
 ## 0.5.5 (2024-09-26)
 
 ### Fix
