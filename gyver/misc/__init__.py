@@ -10,6 +10,7 @@ from .asynciter import (
     amap,
     amoving_window,
     as_async_generator,
+    asafe_generator,
     maybe_anext,
 )
 from .casting import (
@@ -38,6 +39,7 @@ __all__ = [
     'aenumerate',
     'amoving_window',
     'as_async_generator',
+    'asafe_generator',
     'filter_isinstance',
     'filter_issubclass',
     'as_async',

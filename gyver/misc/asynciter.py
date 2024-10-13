@@ -2,16 +2,20 @@ from collections.abc import (
     AsyncGenerator,
     AsyncIterable,
     AsyncIterator,
+    Callable,
     Coroutine,
     Iterable,
     Sequence,
 )
-from typing import Any, Callable, TypeVar
+from contextlib import aclosing
+from typing import Any, ParamSpec, TypeVar
 
 from gyver.misc.casting import as_async
 
 T = TypeVar('T')
 S = TypeVar('S')
+U = TypeVar('U')
+P = ParamSpec('P')
 
 
 async def aenumerate(
@@ -96,3 +100,14 @@ async def agetn_and_exhaust(iterable: AsyncIterable[T], n: int) -> Sequence[T]:
 
 async def maybe_anext(iterable: AsyncIterable[T]) -> T | None:
     return await anext(aiter(iterable), None)
+
+
+def asafe_generator(
+    func: Callable[P, AsyncGenerator[T, S]],
+) -> Callable[P, AsyncGenerator[T, S]]:
+    async def _inner(*args: P.args, **kwargs: P.kwargs) -> AsyncGenerator[T, S]:
+        async with aclosing(func(*args, **kwargs)) as gen:
+            async for item in gen:
+                yield item
+
+    return _inner

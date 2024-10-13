@@ -112,21 +112,21 @@ class lazymethod(Generic[SelfT, T, P]):
     def _set(self, instance: SelfT, *args: P.args, **kwargs: P.kwargs) -> T:
         value = self._func(instance, *args, **kwargs)
         if self._container is None:
-            setattr(instance, self.private_name, value)
+            object.__setattr__(instance, self.private_name, value)
         elif self._container is dict:
             container = cast(
                 dict[Hashable, T],
                 getattr(instance, self.private_name, self._container()),
             )
             container[(*args, tuple(kwargs.items()))] = value
-            setattr(instance, self.private_name, container)
+            object.__setattr__(instance, self.private_name, container)
         elif self._container is list:
             container = cast(
                 list[tuple[Any, T]],
                 getattr(instance, self.private_name, self._container()),
             )
             container.append(((*args, tuple(kwargs.items())), value))
-            setattr(instance, self.private_name, container)
+            object.__setattr__(instance, self.private_name, container)
         return value
 
     def _get(

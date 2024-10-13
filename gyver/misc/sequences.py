@@ -10,6 +10,7 @@ from gyver.misc.casting import safe_cast
 T = TypeVar('T')
 P = ParamSpec('P')
 S = TypeVar('S')
+U = TypeVar('U')
 
 
 def moving_window(
