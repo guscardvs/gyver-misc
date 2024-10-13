@@ -10,7 +10,6 @@ from .asynciter import (
     amap,
     amoving_window,
     as_async_generator,
-    asafe_generator,
     maybe_anext,
 )
 from .casting import (
@@ -21,6 +20,7 @@ from .casting import (
     safe_cast,
 )
 from .functions import cache, lazymethod
+from .namespace import Namespace
 from .sequences import (
     exclude_none,
     flatten,
@@ -63,4 +63,5 @@ __all__ = [
     'maybe_next',
     'enums',
     'asafe_cast',
+    'Namespace',
 ]

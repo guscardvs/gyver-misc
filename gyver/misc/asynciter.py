@@ -7,7 +7,6 @@ from collections.abc import (
     Iterable,
     Sequence,
 )
-from contextlib import aclosing
 from typing import Any, ParamSpec, TypeVar
 
 from gyver.misc.casting import as_async
@@ -100,14 +99,3 @@ async def agetn_and_exhaust(iterable: AsyncIterable[T], n: int) -> Sequence[T]:
 
 async def maybe_anext(iterable: AsyncIterable[T]) -> T | None:
     return await anext(aiter(iterable), None)
-
-
-def asafe_generator(
-    func: Callable[P, AsyncGenerator[T, S]],
-) -> Callable[P, AsyncGenerator[T, S]]:
-    async def _inner(*args: P.args, **kwargs: P.kwargs) -> AsyncGenerator[T, S]:
-        async with aclosing(func(*args, **kwargs)) as gen:
-            async for item in gen:
-                yield item
-
-    return _inner

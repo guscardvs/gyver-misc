@@ -1,11 +1,12 @@
 import functools
-from collections.abc import Callable, Hashable, Sequence
+from collections.abc import Callable, Coroutine, Hashable, Sequence
 from enum import Enum
 from inspect import signature
 from typing import (
     Any,
     Concatenate,
     Generic,
+    Literal,
     ParamSpec,
     TypeVar,
     cast,
@@ -15,6 +16,8 @@ from typing import (
 )
 
 from typing_extensions import Self
+
+from gyver.misc.casting import as_async
 
 T = TypeVar('T')
 P = ParamSpec('P')
@@ -151,3 +154,24 @@ class lazymethod(Generic[SelfT, T, P]):
     @classmethod
     def is_initialized(cls, instance: SelfT, name: str) -> bool:
         return hasattr(instance, cls.format_.format(method_name=name))
+
+
+@overload
+def make_noop(
+    *, returns: T = None, asyncio: Literal[False] = False
+) -> Callable[..., T]: ...
+
+
+@overload
+def make_noop(
+    *, returns: T = None, asyncio: Literal[True]
+) -> Callable[..., Coroutine[Any, Any, T]]: ...
+
+
+def make_noop(
+    *, returns: T = None, asyncio: bool = False
+) -> Callable[..., T] | Callable[..., Coroutine[Any, Any, T]]:
+    def _noop(*args, **kwargs) -> T:
+        return returns
+
+    return _noop if not asyncio else as_async(_noop)
