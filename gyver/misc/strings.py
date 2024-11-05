@@ -73,3 +73,15 @@ comma_separator = make_lex_separator(tuple, str)
 
 def convert(obj: dict[str, Any], key_format: Callable[[str], str]) -> dict[str, Any]:
     return {key_format(key): value for key, value in obj.items()}
+
+
+def sentence(string: str) -> str:
+    return string.rstrip('.!?') + '.'
+
+
+def exclamation(string: str) -> str:
+    return string.rstrip('.!?') + '!'
+
+
+def question(string: str) -> str:
+    return string.rstrip('.!?') + '?'

@@ -1,5 +1,5 @@
 from gyver.misc import as_async, filter_isinstance, safe_cast
-from gyver.misc.casting import asafe_cast
+from gyver.misc.casting import asafe_cast, call_once
 
 
 class CustomError(Exception):
@@ -68,3 +68,18 @@ def test_filter_isinstance():
         mockset,
         mapping,
     ]
+
+
+def test_call_once():
+    counter = 0
+
+    @call_once
+    def func():
+        nonlocal counter
+        counter += 1
+
+    assert counter == 0
+    func()
+    assert counter == 1
+    func()
+    assert counter == 1
