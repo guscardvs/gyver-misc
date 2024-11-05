@@ -1,3 +1,9 @@
+## 0.5.7 (2024-11-05)
+
+### Fix
+
+- **strings/casting**: created string functions sentence/question/exclamation and decorator call_once
+
 ## 0.5.6 (2024-10-13)
 
 ### Fix
