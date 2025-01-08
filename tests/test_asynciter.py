@@ -4,6 +4,8 @@ from gyver.misc import aenumerate, amoving_window, as_async_generator
 from gyver.misc.asynciter import (
     aall,
     aany,
+    acarrymap,
+    acarrystarmap,
     afilter,
     agetn_and_exhaust,
     amap,
@@ -102,3 +104,29 @@ async def test_maybe_anext():
         is None
     )
     assert await maybe_anext(_generate()) == 5
+
+
+async def test_acarrymap():
+    async def predicate(a: int):
+        await asyncio.sleep(0)
+        return a * 2
+
+    items = [1, 2, 3, 4, 5]
+    async for idx, (result, original) in aenumerate(
+        acarrymap(predicate, as_async_generator(items))
+    ):
+        assert result == items[idx] * 2
+        assert original == items[idx]
+
+
+async def test_acarrystarmap():
+    async def predicate(a: int, b: int):
+        await asyncio.sleep(0)
+        return a + b
+
+    items = [(1, 2), (3, 4), (5, 6)]
+    async for idx, (result, args) in aenumerate(
+        acarrystarmap(predicate, as_async_generator(items))
+    ):
+        assert result == sum(items[idx])
+        assert args == items[idx]

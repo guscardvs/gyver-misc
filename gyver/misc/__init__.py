@@ -4,6 +4,8 @@ from . import enums, exc, json, strings, timezone
 from .asynciter import (
     aall,
     aany,
+    acarrymap,
+    acarrystarmap,
     aenumerate,
     afilter,
     agetn_and_exhaust,
@@ -23,6 +25,8 @@ from .casting import (
 from .functions import cache, lazymethod
 from .namespace import Namespace
 from .sequences import (
+    carrymap,
+    carrystarmap,
     exclude_none,
     flatten,
     indexsecond_enumerate,
@@ -65,4 +69,8 @@ __all__ = [
     'strings',
     'timezone',
     'WorkerQueue',
+    'acarrymap',
+    'acarrystarmap',
+    'carrymap',
+    'carrystarmap',
 ]

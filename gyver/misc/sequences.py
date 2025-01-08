@@ -3,7 +3,7 @@ from collections import deque
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from typing import Any, Literal, ParamSpec, TypeAlias, TypeVar
 
-from typing_extensions import Unpack
+from typing_extensions import TypeVarTuple, Unpack
 
 from gyver.misc.casting import safe_cast
 
@@ -11,6 +11,7 @@ T = TypeVar('T')
 P = ParamSpec('P')
 S = TypeVar('S')
 U = TypeVar('U')
+Ts = TypeVarTuple('Ts')
 
 
 def moving_window(
@@ -92,9 +93,9 @@ def merge_dicts(
         for key, value in right_curr.items():
             if key not in left_curr:
                 output_curr[key] = value
-            elif isinstance(value, (list, set, tuple)) and merge_sequences:
+            elif isinstance(value, list | set | tuple) and merge_sequences:
                 left_val = left_curr[key]
-                if isinstance(left_val, (list, set, tuple)):
+                if isinstance(left_val, list | set | tuple):
                     type_ = type(value) if on_conflict == 'right' else type(left_val)
                     output_curr[key] = type_(itertools.chain(left_val, value))
             elif isinstance(value, dict):
@@ -204,3 +205,22 @@ def exclude_none(sequence: SequenceT) -> SequenceT:
 
 def maybe_next(iterable: Iterable[T]) -> T | None:
     return next(iter(iterable), None)
+
+
+def carrymap(
+    predicate: Callable[[T], U], iterable: Iterable[T]
+) -> Iterable[tuple[U, T]]:
+    """Return an iterator that yields tuples of (result, arg)
+    where the result is the result of applying the predicate to the arg."""
+    for arg in iterable:
+        yield predicate(arg), arg
+
+
+def carrystarmap(
+    predicate: Callable[[Unpack[Ts]], U],
+    iterable: Iterable[tuple[Unpack[Ts]]],
+) -> Iterable[tuple[U, tuple[Unpack[Ts]]]]:
+    """Return an iterator that yields tuples of (result, args)
+    where the result is the result of applying the predicate to the args."""
+    for args in iterable:
+        yield predicate(*args), args

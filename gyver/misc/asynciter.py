@@ -9,12 +9,15 @@ from collections.abc import (
 )
 from typing import Any, ParamSpec, TypeVar
 
+from typing_extensions import TypeVarTuple, Unpack
+
 from gyver.misc.casting import as_async
 
 T = TypeVar('T')
 S = TypeVar('S')
 U = TypeVar('U')
 P = ParamSpec('P')
+Ts = TypeVarTuple('Ts')
 
 
 async def aenumerate(
@@ -98,4 +101,24 @@ async def agetn_and_exhaust(iterable: AsyncIterable[T], n: int) -> Sequence[T]:
 
 
 async def maybe_anext(iterable: AsyncIterable[T]) -> T | None:
+    """Return the next item of an async iterable or None if the iterable is empty."""
     return await anext(aiter(iterable), None)
+
+
+async def acarrymap(
+    predicate: Callable[[T], Coroutine[Any, Any, U]], iterable: AsyncIterable[T]
+) -> AsyncIterable[tuple[U, T]]:
+    """Return an async iterator that yields tuples of (result, arg)
+    where the result is the result of applying the predicate to the arg."""
+    async for arg in iterable:
+        yield await predicate(arg), arg
+
+
+async def acarrystarmap(
+    predicate: Callable[[Unpack[Ts]], Coroutine[Any, Any, U]],
+    iterable: AsyncIterable[tuple[Unpack[Ts]]],
+) -> AsyncIterable[tuple[U, tuple[Unpack[Ts]]]]:
+    """Return an async iterator that yields tuples of (result, args)
+    where the result is the result of applying the predicate to the args."""
+    async for args in iterable:
+        yield await predicate(*args), args
