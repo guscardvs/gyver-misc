@@ -1,3 +1,9 @@
+## 0.5.8 (2025-01-08)
+
+### Fix
+
+- created carrymap/carrystarmap and asyncio counterparts
+
 ## 0.5.7 (2024-11-05)
 
 ### Fix
