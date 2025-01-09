@@ -1,3 +1,9 @@
+## 0.5.9 (2025-01-09)
+
+### Fix
+
+- fixed imports to import from their modern location and avoid deprecation warnings
+
 ## 0.5.8 (2025-01-08)
 
 ### Fix
