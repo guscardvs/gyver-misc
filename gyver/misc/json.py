@@ -1,4 +1,5 @@
-from typing import Any, BinaryIO, Callable, TextIO
+from collections.abc import Callable
+from typing import Any, BinaryIO, TextIO
 
 import orjson
 

@@ -1,8 +1,8 @@
 import inspect
 import pathlib
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from pathlib import Path
-from typing import Any, Sequence, TypeAlias
+from typing import Any, TypeAlias
 
 from gyver.misc.functions import lazymethod
 

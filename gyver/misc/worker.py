@@ -1,6 +1,6 @@
 import asyncio
-from collections.abc import Awaitable, Coroutine, Hashable
-from typing import Callable, ClassVar, Generic, TypeVar
+from collections.abc import Awaitable, Callable, Coroutine, Hashable
+from typing import ClassVar, Generic, TypeVar
 
 import exceptiongroup
 from typing_extensions import Self
@@ -157,7 +157,7 @@ class WorkerQueue(Generic[T, R]):
             return
         if not self._event.is_set():
             self._event.set()
-        while not self._worker_queue.qsize() == self._maxtasks:
+        while self._worker_queue.qsize() != self._maxtasks:
             self._worker_queue.put_nowait(None)
         await self._worker_task
         if (exception := self._worker_task.exception()) is not None:
