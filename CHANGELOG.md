@@ -1,3 +1,9 @@
+## 0.5.10 (2025-01-14)
+
+### Fix
+
+- fix type declaration at (a)safe_cast
+
 ## 0.5.9 (2025-01-09)
 
 ### Fix
