@@ -11,6 +11,7 @@ from typing import (
 )
 
 T = TypeVar('T')
+U = TypeVar('U')
 P = ParamSpec('P')
 
 
@@ -18,9 +19,9 @@ def safe_cast(
     target_type: Callable[[Any], T],
     value: Any,
     *,
-    default: T | None = None,
+    default: T | U = None,
     ignore_childof: tuple[type[Exception], ...] = (ValueError, TypeError),
-) -> T | None:
+) -> T | U:
     """Cast value to target_type if possible, otherwise return default."""
     try:
         return target_type(value)
@@ -35,9 +36,9 @@ async def asafe_cast(
     target_type: AsyncFunc[[Any], T],
     value: Any,
     *,
-    default: T | None = None,
+    default: T | U = None,
     ignore_childof: tuple[type[Exception], ...] = (ValueError, TypeError),
-) -> T | None:
+) -> T | U:
     """Cast value to target_type if possible, otherwise return default."""
     try:
         return await target_type(value)
