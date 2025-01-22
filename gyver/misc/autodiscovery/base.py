@@ -97,7 +97,7 @@ class AutoDiscoveryHelper:
         )
         if any((str_include, path_include)):
             should_look = should_look and any(
-                (path.name in str_include, path in path_include)
+                (not path.is_dir() and path.name in str_include, path in path_include)
             )
         return should_look
 
