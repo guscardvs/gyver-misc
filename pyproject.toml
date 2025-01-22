@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gyver-misc"
-version = "0.5.11"
+version = "0.5.12"
 description = ""
 authors = ["Gustavo Cardoso <self.gustavocorrea@gmail.com>"]
 packages = [{ include = "gyver" }]

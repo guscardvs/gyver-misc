@@ -1,3 +1,9 @@
+## 0.5.12 (2025-01-22)
+
+### Fix
+
+- **autodiscovery**: only checks str_include for file names for path excludes, use pathlib path
+
 ## 0.5.11 (2025-01-22)
 
 ### Fix
