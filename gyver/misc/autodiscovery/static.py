@@ -80,6 +80,7 @@ class StaticAutoDiscovery:
         exts: Sequence[str] = (),
         converter: PathConverter = Path.as_posix,
         rounds: int = 1,
+        include: Sequence[StrOrPath] = (),
     ):
         self._validator = validator
         self._rounds = rounds
@@ -89,6 +90,7 @@ class StaticAutoDiscovery:
             exclude,
             exts,
             converter,
+            include,
         )
         self._cache: CacheMap = {}
         self._returned: dict[str, bool] = {}

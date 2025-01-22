@@ -51,8 +51,10 @@ class AutoDiscoveryHelper:
         '_exclude',
         '_exts',
         '_converter',
+        '_include',
         lazymethod.get_private('get_resolver'),
         lazymethod.get_private('_excludes'),
+        lazymethod.get_private('_includes'),
     )
 
     def __init__(
@@ -62,12 +64,14 @@ class AutoDiscoveryHelper:
         exclude: Sequence[StrOrPath] = (),
         exts: Sequence[str] = (),
         converter: PathConverter = Path.as_posix,
+        include: Sequence[StrOrPath] = (),
     ):
         self._root = root
         self._look_on = look_on
         self._exclude = ('__pycache__', *exclude)
         self._exts = ('.py', *exts)
         self._converter = converter
+        self._include = include
 
     @lazymethod
     def _excludes(self) -> tuple[tuple[str, ...], tuple[Path, ...]]:
@@ -75,8 +79,15 @@ class AutoDiscoveryHelper:
         path_exclude = tuple(filter_isinstance(pathlib.Path, self._exclude))
         return str_exclude, path_exclude
 
+    @lazymethod
+    def _includes(self) -> tuple[tuple[str, ...], tuple[Path, ...]]:
+        str_include = tuple(filter_isinstance(str, self._include))
+        path_include = tuple(filter_isinstance(pathlib.Path, self._include))
+        return str_include, path_include
+
     def _should_look(self, path: Path) -> bool:
         str_exclude, path_exclude = self._excludes()
+        str_include, path_include = self._includes()
         _, ext = os.path.splitext(path)
 
         should_look = (
@@ -84,6 +95,10 @@ class AutoDiscoveryHelper:
             and path not in path_exclude
             and (not path.is_file() or ext in self._exts)
         )
+        if any((str_include, path_include)):
+            should_look = should_look and any(
+                (path.name in str_include, path in path_include)
+            )
         return should_look
 
     @property
@@ -177,8 +192,8 @@ def smart_import(modfullname: str, resolver: PathConverter) -> ModuleType:
 
     main = sys.modules.get('__main__')
     main_modname = ''
-    if main and main.__file__:
-        main_modname = resolver(Path(main.__file__))
+    if main and (main_file := getattr(main, '__file__', None)):
+        main_modname = resolver(Path(main_file))
 
     if main_modname == modname:
         return main  # type: ignore

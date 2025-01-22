@@ -52,6 +52,7 @@ class RuntimeAutoDiscovery:
         exclude: Sequence[StrOrPath] = (),
         exts: Sequence[str] = (),
         converter: PathConverter = Path.as_posix,
+        include: Sequence[StrOrPath] = (),
     ):
         """
         Iterates over the members of the module specified by the given path.
@@ -70,6 +71,7 @@ class RuntimeAutoDiscovery:
             exclude,
             exts,
             converter,
+            include,
         )
 
     def _itermod(self, path: Path) -> Iterable[tuple[str, Any]]:
