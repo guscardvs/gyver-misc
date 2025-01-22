@@ -1,3 +1,9 @@
+## 0.5.11 (2025-01-22)
+
+### Fix
+
+- **autodiscovery**: fix smart_import for main without __file__ and add support for include param in autodiscovery
+
 ## 0.5.10 (2025-01-14)
 
 ### Fix
